@@ -1,3 +1,12 @@
+/**
+ * Singzon, Ryan
+ * 260397455
+ * 
+ * COMP 251 - Algorithms and Data Structures
+ * Winter 2014
+ */
+
+package a1posted;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -152,19 +161,40 @@ public class IndexedHeap{
 
 	private void swap(int i, int j){
 
-		//----------------------- ADD YOUR CODE HERE ----------------------------		
+		//Swap the indices corresponding to the names
+		nameToIndex.put(names.get(j), i);
+		nameToIndex.put(names.get(i), j);
 		
+		//Swap the names of the objects
+		String nameToSwap = names.get(j);
+		names.set(j,  names.get(i));
+		names.set(i, nameToSwap);
+		
+		//Then swap their priorities
+		double tempPriority;
+		tempPriority = priorities.get(j);
+		priorities.set(j, priorities.get(i));
+		priorities.set(i, tempPriority);
+
 	}
 
 	
-	
-	//  returns (and removes) the name of the element with lowest priority value, and updates the heap
+	//  returns (and removes) the name of the element with lowest priority value, and updates the heap	
 	
 	public String removeMin(){
+		
+		//Get the name of the highest priority node to return
+		String nodeToRemove = names.get(1);
+		nameToIndex.remove(names.get(1));
+		
+		//Find the last node and place it at the top of the heap
+		names.set(1, names.get(names.size()-1));
+		priorities.set(1, priorities.get(priorities.size()-1));
+		
+		//Bubble down the top node
+		downHeap(1);
 
-		//----------------------- ADD YOUR CODE HERE  ----------------------------
-
-		return null;  //  replace this line
+		return nodeToRemove;
 	}	
 
 	/*
@@ -177,7 +207,15 @@ public class IndexedHeap{
 		if  (contains( name ))
 			throw new IllegalArgumentException("Trying to add " + String.valueOf(name) + ", but its already there.");
 
-		//----------------------- ADD YOUR CODE HERE  ----------------------------
+		
+		//Add the name into the ArrayList and HashMap
+		names.set(names.size(), name);
+		nameToIndex.put(name, names.size());
+		
+		//Add the priority
+		priorities.set(priorities.size(), priority);
+		
+		upHeap(priorities.size());
 		
 	}
 	
@@ -196,6 +234,26 @@ public class IndexedHeap{
 			throw new IllegalArgumentException("Trying to change priority of " + String.valueOf(name) + ", but its not there.");
 
 		//-----------------------  ADD YOUR CODE HERE ----------------------------
+		
+		//Get the index of the object to change
+		int index = nameToIndex.get(name);
+		
+		double oldPriority = priorities.get(index);
+		
+		//Swap priorities
+		priorities.set(index, priority);
+		
+		//Compare the new priority
+		if(priority > oldPriority){
+			//New priority has higher priority, bubble up (ie. new priority is smaller) 
+			upHeap(index);
+		}
+		
+		else{
+			//New priority has lower priority, bubble down (ie. new priority is larger)
+			downHeap(index);
+			
+		}
 
 	}
 	
