@@ -31,13 +31,20 @@ public class TestIndexedHeap {
 		 *    of them should produce a heap. 
 		 */
 
-		int numElements = 200;
+		//Changed from 200 to 10
+		int numElements = 10;
 		for (int i=1; i <= numElements; i++){
 			
 			//  give this element a random priority
 			
 			d = generator.nextDouble();
 			pq.add( "v_" + new Integer(i).toString() , d);
+			
+			System.out.println("v_"+i+": "+d);
+			
+			
+			System.out.println(pq.nameOfMin() + ": "+pq.getMinPriority());
+			System.out.println();
 		}
 
 		/*

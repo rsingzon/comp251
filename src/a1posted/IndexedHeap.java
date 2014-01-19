@@ -185,14 +185,23 @@ public class IndexedHeap{
 		
 		//Get the name of the highest priority node to return
 		String nodeToRemove = names.get(1);
-		nameToIndex.remove(names.get(1));
+		nameToIndex.remove(nodeToRemove);
 		
-		//Find the last node and place it at the top of the heap
-		names.set(1, names.get(names.size()-1));
-		priorities.set(1, priorities.get(priorities.size()-1));
+		//Remove the node from the heap
+		names.remove(nodeToRemove);
+		priorities.remove(priorities.get(1));
 		
-		//Bubble down the top node
-		downHeap(1);
+		//If the heap is not empty, find the last node and swap it into the top of the node
+		if(names.size() > 1){
+			names.add(1, names.get(names.size()-1));
+			names.remove(names.size()-1);
+			priorities.add(1, priorities.get(priorities.size()-1));
+			priorities.remove(priorities.size()-1);
+
+			//Bubble down the top node
+			downHeap(1);
+		}
+		
 
 		return nodeToRemove;
 	}	
@@ -209,13 +218,12 @@ public class IndexedHeap{
 
 		
 		//Add the name into the ArrayList and HashMap
-		names.set(names.size(), name);
-		nameToIndex.put(name, names.size());
+		names.add(name);
+		nameToIndex.put(name, names.size()-1);
 		
 		//Add the priority
-		priorities.set(priorities.size(), priority);
-		
-		upHeap(priorities.size());
+		priorities.add(priority);
+		upHeap(priorities.size()-1);
 		
 	}
 	
