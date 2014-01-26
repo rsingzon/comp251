@@ -32,19 +32,43 @@ public class TestIndexedHeap {
 		 */
 
 		//Changed from 200 to 10
-		int numElements = 10;
+		int numElements = 200;
 		for (int i=1; i <= numElements; i++){
 			
 			//  give this element a random priority
 			
 			d = generator.nextDouble();
+
+			
+			System.out.println("Adding: v_"+i+": "+d);			
 			pq.add( "v_" + new Integer(i).toString() , d);
+		}
+		
+
+		//TEST -> Remove all elements in order of priority
+		System.out.println("\nREMOVING ALL ELEMENTS");
+		while(pq.sizePQ() > 0){
 			
-			System.out.println("v_"+i+": "+d);
+			double previousPriority = 0;
+			if(previousPriority > pq.getMinPriority()){
+				System.out.println("ERROR: "+pq.nameOfMin() +" has priority "+pq.getMinPriority());
+				System.exit(0);
+			}
+			else{
+				previousPriority = pq.getMinPriority();
+				pq.removeMin();
+				System.out.println(previousPriority);
+			}
+		}
+		System.out.println();
+		
+		
+		for (int i=1; i <= numElements; i++){
 			
-			
-			System.out.println(pq.nameOfMin() + ": "+pq.getMinPriority());
-			System.out.println();
+			//  give this element a random priority
+			d = generator.nextDouble();
+			System.out.println("Adding: v_"+i+": "+d);
+			pq.add( "v_" + new Integer(i).toString() , d);
 		}
 
 		/*
@@ -64,9 +88,20 @@ public class TestIndexedHeap {
 		String    names[]      = new String[numElements]; 
 		double    priorities[] = new double[numElements]; 
 
+		double expectedPriority = 1.0;
+		
 		for (int i=0; i < numElements; i++){
 			priorities[i] = pq.getMinPriority();			
 			names[i] = pq.removeMin();
+			
+			int expectedName = i+1;
+			if(priorities[i] != expectedPriority){
+				System.out.println("ERROR: Incorrect value.  Expected: "+expectedPriority+", actual: "+priorities[i]);
+				System.out.println("ERROR: Incorrect name.  Expected: v_"+expectedName+", actual: "+names[i]);
+				System.exit(0);
+			}
+			expectedPriority++;
+			
 		}
 
 		for (int i=0; i < numElements; i++){

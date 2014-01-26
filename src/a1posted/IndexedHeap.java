@@ -82,7 +82,6 @@ public class IndexedHeap{
 	private void upHeap(int i){
 		if (i > 1) {   // min element is at 1, not 0
 			if ( priorities.get(i) < priorities.get(parent(i)) ) {
-
 				swap(parent(i),i);
 				upHeap(parent(i));
 			}
@@ -162,8 +161,9 @@ public class IndexedHeap{
 	private void swap(int i, int j){
 
 		//Swap the indices corresponding to the names
+		String tempName = names.get(i);
 		nameToIndex.put(names.get(j), i);
-		nameToIndex.put(names.get(i), j);
+		nameToIndex.put(tempName, j);
 		
 		//Swap the names of the objects
 		String nameToSwap = names.get(j);
@@ -175,7 +175,6 @@ public class IndexedHeap{
 		tempPriority = priorities.get(j);
 		priorities.set(j, priorities.get(i));
 		priorities.set(i, tempPriority);
-
 	}
 
 	
@@ -216,15 +215,15 @@ public class IndexedHeap{
 		if  (contains( name ))
 			throw new IllegalArgumentException("Trying to add " + String.valueOf(name) + ", but its already there.");
 
-		
 		//Add the name into the ArrayList and HashMap
 		names.add(name);
-		nameToIndex.put(name, names.size()-1);
+		nameToIndex.put(name, sizePQ()+1);
 		
 		//Add the priority
 		priorities.add(priority);
-		upHeap(priorities.size()-1);
 		
+		//Bubble the new key up to the top
+		upHeap(sizePQ());
 	}
 	
 	public void  add(String name){
@@ -241,18 +240,16 @@ public class IndexedHeap{
 		if  (!contains( name ))
 			throw new IllegalArgumentException("Trying to change priority of " + String.valueOf(name) + ", but its not there.");
 
-		//-----------------------  ADD YOUR CODE HERE ----------------------------
 		
 		//Get the index of the object to change
 		int index = nameToIndex.get(name);
-		
-		double oldPriority = priorities.get(index);
-		
+
 		//Swap priorities
+		double oldPriority = priorities.get(index);
 		priorities.set(index, priority);
 		
 		//Compare the new priority
-		if(priority > oldPriority){
+		if(priority < oldPriority){
 			//New priority has higher priority, bubble up (ie. new priority is smaller) 
 			upHeap(index);
 		}
@@ -260,9 +257,7 @@ public class IndexedHeap{
 		else{
 			//New priority has lower priority, bubble down (ie. new priority is larger)
 			downHeap(index);
-			
 		}
-
 	}
 	
 }
