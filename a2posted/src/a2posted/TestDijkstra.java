@@ -16,6 +16,8 @@ public class TestDijkstra{
 		String startingVertex = "a";
 		graph = reader.getParsedGraph();
 		
+//		System.out.println(graph.toString());
+		
 		/*  
 		 *  I changed this slightly from the original starter code because there was 
 		 *  some awkwardness with the initialization.   
@@ -24,9 +26,11 @@ public class TestDijkstra{
 		dijkstra = new Dijkstra();
 		dijkstra.dijkstraVertices( graph, startingVertex );
 		System.out.println("dijkstraVertices: \n" + dijkstra );
-		
+/*		
 		dijkstra = new Dijkstra();
 		dijkstra.dijkstraEdges(    graph, startingVertex );
 		System.out.println("dijkstraEdges: \n" + dijkstra );
+*/
 	}
 }
+		

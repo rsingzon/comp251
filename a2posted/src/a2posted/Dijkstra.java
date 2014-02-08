@@ -1,3 +1,11 @@
+/**
+ * Singzon, Ryan
+ * 260397455
+ * 
+ * COMP 251 - Algorithms and Data Structures
+ * Winter 2014
+ */
+
 package a2posted;
 
 import java.util.HashMap;
@@ -5,15 +13,15 @@ import java.util.HashSet;
 
 public class Dijkstra {
 
-	private IndexedHeap  pq;	
-	private static int edgeCount = 0;               //  Use this to give names to the edges.										
+	private IndexedHeap pq;
+	private static int edgeCount = 0; //  Use this to give names to the edges.										
 	private HashMap<String,Edge>  edges = new HashMap<String,Edge>();
 
 	private HashMap<String,String>   parent;
 	private HashMap<String,Double>   dist;  //  This is variable "d" in lecture notes
 	private String 					 startingVertex;	
 	
-	HashSet<String>  setS      ;
+	HashSet<String>  setS;
 	HashSet<String>  setVminusS;
 
 	public Dijkstra(){
@@ -31,12 +39,11 @@ public class Dijkstra {
 	public void dijkstraVertices(Graph graph, String s){
 		
 		//  temporary variables
-		
 		String u;	
 		double  distToU,
 				costUV;		
 		
-		HashMap<String,Double>    uAdjList;		
+		HashMap<String,Double> uAdjList;		
 		initialize(graph,s);
 		
 		parent.put( s, null );
@@ -44,7 +51,44 @@ public class Dijkstra {
 		this.startingVertex = s;
 
 		//  --------- BEGIN: ADD YOUR CODE HERE  -----------------------
-
+		//Initialize the priority of all the vertices to infinity
+		for(String vertex : setVminusS){
+			pq.add(vertex, Double.POSITIVE_INFINITY);
+		}
+		
+		//Get all vertices in the graph and add them to V\S
+		setVminusS = graph.getVertices();
+		
+		//While the set V\S is not empty, continue adding vertices
+		while(!setVminusS.isEmpty()){
+			
+			//Remove the name and edge weight of best vertex
+			u = pq.nameOfMin();
+			dist.put(u, pq.getMinPriority());
+			pq.removeMin();
+			setS.add(u);
+			setVminusS.remove(u);
+			
+			//Get the adjacency list for the newly added vertex
+			uAdjList = graph.getAdjList().get(u);
+			
+			
+			//Perform a breadth first search to find all crossing edges
+			for(String adjacentVertex : uAdjList.keySet()){
+				if(setVminusS.contains(adjacentVertex)){
+			
+					//Find the crossing edge with the lowest weight 
+					costUV = uAdjList.get(adjacentVertex);
+					distToU = dist.get(u) + costUV;
+					
+					//Change the priority of the vertex with the smaller edge weights
+					if(distToU < pq.getPriority(adjacentVertex)){
+						pq.changePriority(adjacentVertex, distToU);
+						parent.put(adjacentVertex, u);
+					}
+				}
+			}
+		}
 		//  --------- END:  ADD YOUR CODE HERE  -----------------------
 	}
 	
