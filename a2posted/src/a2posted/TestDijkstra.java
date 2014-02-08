@@ -7,16 +7,14 @@ public class TestDijkstra{
 		Dijkstra dijkstra;
 
 		
-		/*
-		GraphReader  reader	=	new GraphReader("src/a2solution/test_graph_1.sdot");
+		
+/*		GraphReader  reader	=	new GraphReader("src/a2solution/test_graph_1.sdot");
 		String startingVertex = "4";
-		*/
-
+*/		
 		GraphReader  reader	=	new GraphReader("src/a2solution/test_graph_2.sdot");
 		String startingVertex = "a";
-		graph = reader.getParsedGraph();
 		
-//		System.out.println(graph.toString());
+		graph = reader.getParsedGraph();
 		
 		/*  
 		 *  I changed this slightly from the original starter code because there was 
@@ -26,11 +24,14 @@ public class TestDijkstra{
 		dijkstra = new Dijkstra();
 		dijkstra.dijkstraVertices( graph, startingVertex );
 		System.out.println("dijkstraVertices: \n" + dijkstra );
-/*		
+		
+		
+		System.out.println(graph.toString());
+		
 		dijkstra = new Dijkstra();
 		dijkstra.dijkstraEdges(    graph, startingVertex );
 		System.out.println("dijkstraEdges: \n" + dijkstra );
-*/
+
 	}
 }
 		

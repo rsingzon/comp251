@@ -57,7 +57,10 @@ public class Dijkstra {
 		}
 		
 		//Get all vertices in the graph and add them to V\S
-		setVminusS = graph.getVertices();
+		//setVminusS = graph.getVertices();
+		for(String vertex : graph.getVertices()){
+			setVminusS.add(vertex);
+		}
 		
 		//While the set V\S is not empty, continue adding vertices
 		while(!setVminusS.isEmpty()){
@@ -99,15 +102,51 @@ public class Dijkstra {
 		//  (Could have done it either way.)
 		
 		//  temporary variables
-		
 		Edge e;
 		String u,v;
 		double tmpDistToV;
 		
 		initialize(graph, startingVertex);
-
-		//  --------- BEGIN: ADD YOUR CODE HERE  -----------------------
 		
+		//  --------- BEGIN: ADD YOUR CODE HERE  -----------------------
+		//Get all vertices in graph and add them to V\S
+		for(String vertex : graph.getVertices()){
+			setVminusS.add(vertex);
+		}
+		
+		//Place edges leaving the starting vertex into the priority queue
+		pqAddEdgesFrom(graph, startingVertex);
+		
+		setS.add(startingVertex);
+		setVminusS.remove(startingVertex);
+				
+		//Continue moving vertices from V\S to S until all of them have been moved
+		while(!setVminusS.isEmpty()){
+			
+			if(pq.isEmpty()) break;
+			
+			//Remove the lowest cost edge
+			e = edges.get(pq.removeMin());
+			
+			//Check if the end vertex has already been visited
+			u = e.getStartVertex();
+			v = e.getEndVertex();
+			if(setVminusS.contains(v)){
+				
+				//Find the distance between the vertices the edge connects
+				tmpDistToV = graph.getAdjList().get(u).get(v);
+				System.out.println("Removing edge from " + u + " to "+ v + ". Weight: "+ tmpDistToV);
+				parent.put(v, u);
+				dist.put(v, tmpDistToV + dist.get(parent.get(v)));
+				
+				//Remove the vertex v from V\S
+				setS.add(v);
+				setVminusS.remove(v);
+				
+				//Add new crossing edges
+				pqAddEdgesFrom(graph, v);
+			}
+		}
 		//  --------- END:  ADD YOUR CODE HERE  -----------------------
 
 	}
