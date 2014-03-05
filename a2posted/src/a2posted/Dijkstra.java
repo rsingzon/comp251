@@ -69,6 +69,8 @@ public class Dijkstra {
 			u = pq.nameOfMin();
 			dist.put(u, pq.getMinPriority());
 			pq.removeMin();
+
+			//Move the vertex from V\S to S
 			setS.add(u);
 			setVminusS.remove(u);
 			
@@ -84,7 +86,7 @@ public class Dijkstra {
 					costUV = uAdjList.get(adjacentVertex);
 					distToU = dist.get(u) + costUV;
 					
-					//Change the priority of the vertex with the smaller edge weights
+					//Change the priority of the vertex with smaller edge weights
 					if(distToU < pq.getPriority(adjacentVertex)){
 						pq.changePriority(adjacentVertex, distToU);
 						parent.put(adjacentVertex, u);
@@ -117,6 +119,7 @@ public class Dijkstra {
 		//Place edges leaving the starting vertex into the priority queue
 		pqAddEdgesFrom(graph, startingVertex);
 		
+		//Place all but the starting vertex into the set V\S
 		setS.add(startingVertex);
 		setVminusS.remove(startingVertex);
 				
@@ -135,7 +138,6 @@ public class Dijkstra {
 				
 				//Find the distance between the vertices the edge connects
 				tmpDistToV = graph.getAdjList().get(u).get(v);
-				System.out.println("Removing edge from " + u + " to "+ v + ". Weight: "+ tmpDistToV);
 				parent.put(v, u);
 				dist.put(v, tmpDistToV + dist.get(parent.get(v)));
 				

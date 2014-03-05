@@ -8,11 +8,11 @@ public class TestDijkstra{
 
 		
 		
-/*		GraphReader  reader	=	new GraphReader("src/a2solution/test_graph_1.sdot");
-		String startingVertex = "4";
-*/		
-		GraphReader  reader	=	new GraphReader("src/a2solution/test_graph_2.sdot");
-		String startingVertex = "a";
+		GraphReader  reader	=	new GraphReader("src/a2solution/test_graph_1.sdot");
+		String startingVertex = "2";
+		
+		/*GraphReader  reader	=	new GraphReader("src/a2solution/test_graph_2.sdot");
+		String startingVertex = "a";*/
 		
 		graph = reader.getParsedGraph();
 		
@@ -26,7 +26,6 @@ public class TestDijkstra{
 		System.out.println("dijkstraVertices: \n" + dijkstra );
 		
 		
-		System.out.println(graph.toString());
 		
 		dijkstra = new Dijkstra();
 		dijkstra.dijkstraEdges(    graph, startingVertex );
