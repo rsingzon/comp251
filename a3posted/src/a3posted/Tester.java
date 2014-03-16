@@ -12,7 +12,12 @@ public class Tester{
 		String start = "s",  terminal = "t";
 		graph = reader.getParsedGraph();
 		flowNetwork = new FlowNetwork(graph);
+		
+		//Initial flow network
+		System.out.println("Initial: \n"+flowNetwork);
+		
 		flowNetwork.maxFlow(start, terminal);
-		System.out.println(flowNetwork);
+		
+		System.out.println("\nFinal: \n"+flowNetwork);		
 	}
 }

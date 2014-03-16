@@ -10,6 +10,7 @@
 
 package a3posted;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.HashSet;
 
@@ -68,6 +69,8 @@ public class FlowNetwork {
 				beta = computeBottleneck(path);
 				augment(path, beta);				
 			}
+			System.out.println("\nResidual graph after");
+			System.out.println(residualCapacities.toString());
 		}	
 	}
 	
@@ -78,10 +81,44 @@ public class FlowNetwork {
 	 */
 	
 	public LinkedList<String>  findAugmentingPath(String s, String t){
+	
+		//Create a temporary list to hold the reversed path and create the augmented path
+		LinkedList<String> tempPath = new LinkedList<String>();
+		LinkedList<String> augmentingPath = new LinkedList<String>();
 
-		//  ADD YOUR CODE HERE.
+		//Perform breadth first search on the residual graph to find valid paths
+		residualCapacities.bfs(s);
 		
-		return null;   //   stub.  delete this line.
+		
+		//Add the path from the terminus to the source
+		tempPath.add(t);
+		String currentNode = t;
+		String parent = "";
+		
+		//Continue adding edges until the parent of the current node points to itself
+		while(residualCapacities.getParent(currentNode) != null){
+		 	parent = residualCapacities.getParent(currentNode);
+			tempPath.add(residualCapacities.getParent(currentNode));
+			currentNode = parent;
+			if(parent.equals(s)) break;
+		}
+		
+		while(!tempPath.isEmpty()){
+			augmentingPath.add(tempPath.removeLast());
+		}
+		
+		//If the node visited last is the source, then the path is valid
+		if(currentNode.equals(s)){
+			for(String node : augmentingPath){
+				System.out.println(node);
+			}
+			return augmentingPath;
+		}
+		
+		//Otherwise, there is not path from the terminus to the source
+		else{
+			return null;
+		}
 		
 	}
 	
@@ -97,17 +134,73 @@ public class FlowNetwork {
 		//  Check all edges in the path and find the one with the smallest weight in the
 		//  residual graph.   This will be the new value of beta.
 
-		//   ADD YOUR CODE HERE.
+		String currentNode;
+		String nextNode;
+		double residualCapacity;
 		
+		//Traverse the entire path and find the lowest weight
+		for(int i = 0; i < path.size() - 1; i++){
+			currentNode = path.get(i);
+			residualCapacity = Double.MAX_VALUE;
+			
+			//Get the weight of the edge to the next node in the path 
+			nextNode = path.get(i+1);
+			residualCapacity = residualCapacities.getEdgesFrom(currentNode).get(nextNode);
+				
+			//Set beta to the smallest residual capacity 
+			if(beta > residualCapacity){
+				beta = residualCapacity;
+			}
+		}
+		
+		System.out.println("Bottleneck: "+beta);
 		return beta;
 	}
 	
 	//  Once we know beta for a path, we recompute the flow and update the residual capacity graph.
 
 	public void augment(LinkedList<String>  path,  double beta){
-
-		//   ADD YOUR CODE HERE.
 		
+		String currentNode;
+		String nextNode;
+		
+		//Increase the flow at every edge in the path
+		for(int i = 0; i < path.size()-1; i++){
+			currentNode = path.get(i);
+			nextNode = path.get(i+1);
+			
+			//Get the value of the current flow between the edges and augment the flow
+			double newFlow = flow.getEdgesFrom(currentNode).get(nextNode) + beta;
+			flow.addEdge(currentNode, nextNode, newFlow);
+			
+			//Calculate the new residual flow
+			double newResidualFlow = residualCapacities.getEdgesFrom(currentNode).get(nextNode) - beta;
+			
+			//If a backwards edge already exists in the residual graph, get its value
+			double backwardsEdge;
+			if(residualCapacities.getEdgesFrom(nextNode).containsKey(currentNode)){
+				backwardsEdge = residualCapacities.getEdgesFrom(nextNode).get(currentNode);
+			}
+			
+			//Else, the backwards edge does not yet exist
+			else{
+				backwardsEdge = 0.0;
+			}
+			
+			//Set the backwards edge
+			residualCapacities.addEdge(nextNode, currentNode, backwardsEdge + beta);
+			
+			//Remove a forward edge if it is zero
+			if(newResidualFlow == 0.0){
+				residualCapacities.getEdgesFrom(currentNode).remove(nextNode);
+			}
+			
+			//Otherwise subtract the flow from the residual capacity
+			else{
+				residualCapacities.addEdge(currentNode, nextNode, newResidualFlow);
+			}
+			
+		}
 	}
 
 	//  This just dumps out the adjacency lists of the three graphs (original with capacities,  flow,  residual graph).
