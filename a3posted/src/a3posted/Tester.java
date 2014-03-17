@@ -8,7 +8,7 @@ public class Tester{
 		Graph graph;
 		FlowNetwork  flowNetwork  ;
 		
-		GraphReader  reader	=	new GraphReader("src/a3posted/test_networkflow_1.sdot");
+		GraphReader  reader	=	new GraphReader("src/a3posted/test_networkflow_3.sdot");
 		String start = "s",  terminal = "t";
 		graph = reader.getParsedGraph();
 		flowNetwork = new FlowNetwork(graph);

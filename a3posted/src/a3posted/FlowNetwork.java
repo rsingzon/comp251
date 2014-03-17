@@ -169,37 +169,43 @@ public class FlowNetwork {
 			currentNode = path.get(i);
 			nextNode = path.get(i+1);
 			
+			//Initialize the edges to change
+			double newFlow = 0.0;
+			double forwardEdge = 0.0;
+			double backwardsEdge = 0.0;
+			
 			//Get the value of the current flow between the edges and augment the flow
-			double newFlow = flow.getEdgesFrom(currentNode).get(nextNode) + beta;
+			if(flow.getEdgesFrom(currentNode).containsKey(nextNode)){
+				newFlow = flow.getEdgesFrom(currentNode).get(nextNode);
+			}
+			
+			newFlow += beta;
 			flow.addEdge(currentNode, nextNode, newFlow);
-			
-			//Calculate the new residual flow
-			double newResidualFlow = residualCapacities.getEdgesFrom(currentNode).get(nextNode) - beta;
-			
-			//If a backwards edge already exists in the residual graph, get its value
-			double backwardsEdge;
-			if(residualCapacities.getEdgesFrom(nextNode).containsKey(currentNode)){
-				backwardsEdge = residualCapacities.getEdgesFrom(nextNode).get(currentNode);
+
+			//Calculate the forward and backward edges for the residual graph
+			if(flow.getEdgesFrom(currentNode).containsKey(nextNode)){
+
+				//Weight of backwards edge is flow(e)
+				backwardsEdge = flow.getEdgesFrom(currentNode).get(nextNode);
+
+				if(capacities.getEdgesFrom(currentNode).containsKey(nextNode)){
+					
+					//Weight of forwards edge is capacities(e) - flow(e)
+					forwardEdge = capacities.getEdgesFrom(currentNode).get(nextNode) - flow.getEdgesFrom(currentNode).get(nextNode);
+				}
 			}
+
+			//Add the edges for the forward and backwards edges
+			residualCapacities.addEdge(currentNode, nextNode, forwardEdge);
+			residualCapacities.addEdge(nextNode, currentNode, backwardsEdge);
 			
-			//Else, the backwards edge does not yet exist
-			else{
-				backwardsEdge = 0.0;
-			}
-			
-			//Set the backwards edge
-			residualCapacities.addEdge(nextNode, currentNode, backwardsEdge + beta);
-			
-			//Remove a forward edge if it is zero
-			if(newResidualFlow == 0.0){
+			//Remove an edge if it is zero
+			if(forwardEdge == 0.0){ 
 				residualCapacities.getEdgesFrom(currentNode).remove(nextNode);
 			}
-			
-			//Otherwise subtract the flow from the residual capacity
-			else{
-				residualCapacities.addEdge(currentNode, nextNode, newResidualFlow);
+			if(backwardsEdge == 0.0){
+				residualCapacities.getEdgesFrom(nextNode).remove(currentNode);
 			}
-			
 		}
 	}
 
