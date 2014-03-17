@@ -10,9 +10,7 @@
 
 package a3posted;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.HashSet;
 
 public class FlowNetwork {
 
@@ -69,6 +67,9 @@ public class FlowNetwork {
 				beta = computeBottleneck(path);
 				augment(path, beta);				
 			}
+			System.out.println("\nFlow after");
+			System.out.println(flow.toString());
+			
 			System.out.println("\nResidual graph after");
 			System.out.println(residualCapacities.toString());
 		}	
@@ -173,15 +174,29 @@ public class FlowNetwork {
 			double newFlow = 0.0;
 			double forwardEdge = 0.0;
 			double backwardsEdge = 0.0;
+			boolean backwardsEdgeExists = false;
 			
 			//Get the value of the current flow between the edges and augment the flow
 			if(flow.getEdgesFrom(currentNode).containsKey(nextNode)){
 				newFlow = flow.getEdgesFrom(currentNode).get(nextNode);
 			}
 			
+			//If there exist an edge from the next node to the current node, 
+			//then there is a backwards edge in the residual graph
+			if(flow.getEdgesFrom(nextNode).containsKey(currentNode)){
+				backwardsEdgeExists = true;
+				newFlow = newFlow - flow.getEdgesFrom(nextNode).get(currentNode);
+			}
+
 			newFlow += beta;
+			
 			flow.addEdge(currentNode, nextNode, newFlow);
 
+			//If a backwards edge exists, then also change the flow for that edge
+			if(backwardsEdgeExists){
+				flow.addEdge(nextNode, currentNode, newFlow);
+			}
+			
 			//Calculate the forward and backward edges for the residual graph
 			if(flow.getEdgesFrom(currentNode).containsKey(nextNode)){
 
@@ -200,12 +215,19 @@ public class FlowNetwork {
 			residualCapacities.addEdge(nextNode, currentNode, backwardsEdge);
 			
 			//Remove an edge if it is zero
+			if(newFlow == 0.0){
+				flow.getEdgesFrom(currentNode).remove(nextNode);
+				flow.getEdgesFrom(nextNode).remove(currentNode);
+			}
+			
 			if(forwardEdge == 0.0){ 
 				residualCapacities.getEdgesFrom(currentNode).remove(nextNode);
 			}
 			if(backwardsEdge == 0.0){
 				residualCapacities.getEdgesFrom(nextNode).remove(currentNode);
 			}
+			
+			System.out.println("Changes at node : " + currentNode + "\n" + residualCapacities.toString());
 		}
 	}
 
