@@ -13,11 +13,8 @@ public class Tester{
 		graph = reader.getParsedGraph();
 		flowNetwork = new FlowNetwork(graph);
 		
-		//Initial flow network
-		System.out.println("Initial: \n"+flowNetwork);
-		
 		flowNetwork.maxFlow(start, terminal);
 		
-		System.out.println("\nFinal: \n"+flowNetwork);		
+		System.out.println(flowNetwork);		
 	}
 }

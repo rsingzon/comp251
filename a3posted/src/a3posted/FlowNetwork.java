@@ -67,11 +67,6 @@ public class FlowNetwork {
 				beta = computeBottleneck(path);
 				augment(path, beta);				
 			}
-			System.out.println("\nFlow after");
-			System.out.println(flow.toString());
-			
-			System.out.println("\nResidual graph after");
-			System.out.println(residualCapacities.toString());
 		}	
 	}
 	
@@ -104,15 +99,13 @@ public class FlowNetwork {
 			if(parent.equals(s)) break;
 		}
 		
+		//Reverse temporary path
 		while(!tempPath.isEmpty()){
 			augmentingPath.add(tempPath.removeLast());
 		}
 		
 		//If the node visited last is the source, then the path is valid
 		if(currentNode.equals(s)){
-			for(String node : augmentingPath){
-				System.out.println(node);
-			}
 			return augmentingPath;
 		}
 		
@@ -154,7 +147,6 @@ public class FlowNetwork {
 			}
 		}
 		
-		System.out.println("Bottleneck: "+beta);
 		return beta;
 	}
 	
@@ -188,8 +180,8 @@ public class FlowNetwork {
 				newFlow = newFlow - flow.getEdgesFrom(nextNode).get(currentNode);
 			}
 
+			//Augment the flow and update the flow graph
 			newFlow += beta;
-			
 			flow.addEdge(currentNode, nextNode, newFlow);
 
 			//If a backwards edge exists, then also change the flow for that edge
@@ -226,8 +218,6 @@ public class FlowNetwork {
 			if(backwardsEdge == 0.0){
 				residualCapacities.getEdgesFrom(nextNode).remove(currentNode);
 			}
-			
-			System.out.println("Changes at node : " + currentNode + "\n" + residualCapacities.toString());
 		}
 	}
 
