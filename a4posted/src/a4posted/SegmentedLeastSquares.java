@@ -119,38 +119,45 @@ public class SegmentedLeastSquares {
 
 	public void computeOptIterative( ){
 								  
-		//First, precompute the errors for each segment
+		//First, precompute the errors for each possible segment
 		computeEijAB();
 		
 		//Start from small values, working its way up to the Nth point
-		for(int j = 0; j < points.length; j++){
+		int N = points.length;
+		for(int j = 0; j < N; j++){
 			
 			//The cost for one or two points is the cost for one segment
 			if(j == 0 || j == 1){
 				opt[j] = costSegment;
 			}
+			
 			else{
-				
 				//Keep track of the lowest cost
 				double minValue = Double.MAX_VALUE;
 				
 				//Iterate through the values in the opt array to find the lowest cost
-				for(int i = 0; i < j; i++){
+				for(int i = 0; i <= j; i++){
 					
-					double newValue = opt[i] + e_ij[i][j] + costSegment; 
+					double newValue;
+					
+					//Handle array out of bounds when i = 0
+					if(i == 0){
+						newValue = e_ij[i][j] + costSegment;
+					}
+					
+					else{
+						newValue = opt[i-1] + e_ij[i][j] + costSegment;
+					}
 					
 					//Update the lowest cost
 					if( newValue < minValue){
 						minValue = newValue;
 					}
 				}
-				
+
 				opt[j] = minValue;
 			}
-			
 		}
-		
-
 	}
 
 	//  This method computes the minimal cost of a least squares fit for the first j samples, 
@@ -160,55 +167,82 @@ public class SegmentedLeastSquares {
 
 	public double computeOptRecursive(int j){
 
-		//First, precompute the errors for each segment
+		//First, precompute the errors for each possible segment
 		computeEijAB();
 		
-		//Base cases
-		
-		//
-		if(j == 0){
-			return 0.0;
+		//If the opt value already exists, return it
+		if(opt[j] != 0.0){
+			return opt[j];
 		}
 		
-		else if(j == 1){
-			return 0.0;
-		}
-		
+		//Otherwise, compute the answer and store it
 		else{
-			double opt = 0.0;
-			
-			return opt;
+		
+			//Iterate through the possible segments to find the lowest cost
+			double minValue = Double.MAX_VALUE;
+			for(int i = 0; i <= j; i++){
+				
+				double newValue;
+				
+				//Base case
+				if( i == 0 ){
+					newValue = e_ij[i][j] + costSegment;
+				}
+				
+				//Recursive step
+				else{
+					newValue = computeOptRecursive(i-1) + e_ij[i][j] + costSegment; 
+				}
+				
+				//Select lowest cost
+				if( newValue < minValue){
+					minValue = newValue;
+				}
+			}
+
+			//Store the lowest cost into the opt array
+			opt[j] = minValue;
 		}
+		
+		return opt[j];
 	}
 
 	//  This will compute lineSegments, which is an ArrayList<LineSegment>. 
-	
 	public void computeSegmentation(int j){
 
+		//Return from function once j = 0
 		if(j > 0 ){
-			for(int i = 1; i <= j; i++){
-				if(opt[j] == opt[i-1] + e_ij[i][j] + costSegment){
+			
+			//Iterate through indices to find a matching segmentation
+			for(int i = 0; i <= j; i++){
+				
+				double segmentValue;
+				
+				//Handle array out of bounds when i = 0
+				if(i == 0){
+					segmentValue = e_ij[i][j] + costSegment;
+				}
+				else{
+					segmentValue = opt[i-1] + e_ij[i][j] + costSegment;
+				}
+				
+				//If the optimal solution matches the segment value, create a new segment
+				if(opt[j] == segmentValue){
 					
-					//Create a new line segment
 					LineSegment ls = new LineSegment(i, j, a[i][j], b[i][j], e_ij[i][j]);
-					
-					
 					lineSegments.add(ls);
-					System.out.println("Line: ("+i+","+j+")");
-					computeSegmentation(i-i);
+					
+					//Find the remaining segments recursively
+					computeSegmentation(i-1);
 				}
 			}
 		}
-
 	}
 
 	public ArrayList<LineSegment> solveIterative(){
 
 		System.out.println("Solving iteratively...");
 		computeOptIterative();
-		/*for(int i = 0; i < points.length; i++){
-			System.out.println("Opt["+i+"] : "+opt[i]);
-		}*/
 		computeSegmentation( points.length - 1);  //  indices of points is 0, ...,  N-1
 		return(lineSegments);
 	}
