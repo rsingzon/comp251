@@ -166,9 +166,6 @@ public class SegmentedLeastSquares {
 	//  Note that this method just computes the opt values.  It doesn't do the segmentation.
 
 	public double computeOptRecursive(int j){
-
-		//First, precompute the errors for each possible segment
-		computeEijAB();
 		
 		//If the opt value already exists, return it
 		if(opt[j] != 0.0){
@@ -177,7 +174,10 @@ public class SegmentedLeastSquares {
 		
 		//Otherwise, compute the answer and store it
 		else{
-		
+
+			//Precompute the errors for each possible segment
+			computeEijAB();
+			
 			//Iterate through the possible segments to find the lowest cost
 			double minValue = Double.MAX_VALUE;
 			for(int i = 0; i <= j; i++){
