@@ -1,3 +1,12 @@
+/**
+ * COMP 251 - Data Structures and Algorithms
+ * Assignment 4
+ * Winter 2014
+ * 
+ * Singzon, Ryan
+ * 260397455
+ */
+
 package a4posted;
 
 import java.awt.geom.Point2D;
@@ -10,7 +19,7 @@ public class SegmentedLeastSquares {
 
 	Point2D[]  points;
 
-	int      lengthPlusOne=0;  
+	int      lengthPlusOne = 0;  
 	double   costSegment;  // this is the constant C in the lecture,  the cost of each segment
 
 	double  a[][];          //   a[i][j] and b[i][j] will be the coefficients of line y = ax + b + e 
@@ -110,7 +119,37 @@ public class SegmentedLeastSquares {
 
 	public void computeOptIterative( ){
 								  
-		//   ADD YOUR CODE HERE
+		//First, precompute the errors for each segment
+		computeEijAB();
+		
+		//Start from small values, working its way up to the Nth point
+		for(int j = 0; j < points.length; j++){
+			
+			//The cost for one or two points is the cost for one segment
+			if(j == 0 || j == 1){
+				opt[j] = costSegment;
+			}
+			else{
+				
+				//Keep track of the lowest cost
+				double minValue = Double.MAX_VALUE;
+				
+				//Iterate through the values in the opt array to find the lowest cost
+				for(int i = 0; i < j; i++){
+					
+					double newValue = opt[i] + e_ij[i][j] + costSegment; 
+					
+					//Update the lowest cost
+					if( newValue < minValue){
+						minValue = newValue;
+					}
+				}
+				
+				opt[j] = minValue;
+			}
+			
+		}
+		
 
 	}
 
@@ -121,17 +160,45 @@ public class SegmentedLeastSquares {
 
 	public double computeOptRecursive(int j){
 
-		//   ADD YOUR CODE HERE
-
-		return 0.0;  //  replace this line
-
+		//First, precompute the errors for each segment
+		computeEijAB();
+		
+		//Base cases
+		
+		//
+		if(j == 0){
+			return 0.0;
+		}
+		
+		else if(j == 1){
+			return 0.0;
+		}
+		
+		else{
+			double opt = 0.0;
+			
+			return opt;
+		}
 	}
 
 	//  This will compute lineSegments, which is an ArrayList<LineSegment>. 
 	
 	public void computeSegmentation(int j){
 
-	//   ADD YOUR CODE HERE
+		if(j > 0 ){
+			for(int i = 1; i <= j; i++){
+				if(opt[j] == opt[i-1] + e_ij[i][j] + costSegment){
+					
+					//Create a new line segment
+					LineSegment ls = new LineSegment(i, j, a[i][j], b[i][j], e_ij[i][j]);
+					
+					
+					lineSegments.add(ls);
+					System.out.println("Line: ("+i+","+j+")");
+					computeSegmentation(i-i);
+				}
+			}
+		}
 
 	}
 
@@ -139,6 +206,9 @@ public class SegmentedLeastSquares {
 
 		System.out.println("Solving iteratively...");
 		computeOptIterative();
+		/*for(int i = 0; i < points.length; i++){
+			System.out.println("Opt["+i+"] : "+opt[i]);
+		}*/
 		computeSegmentation( points.length - 1);  //  indices of points is 0, ...,  N-1
 		return(lineSegments);
 	}
@@ -158,7 +228,15 @@ public class SegmentedLeastSquares {
 
 class LineSegment{
 	int i,j;  
-	double a,b,error;  
+	double a,b,error; 
+	
+	public LineSegment(int i, int j, double a, double b, double error){
+		this.i = i;
+		this.j = j;
+		this.a = a;
+		this.b = b;
+		this.error = error;
+	}
 
 	public String toString(){
 		return	 " (" + new Integer(i) + "," + new Integer(j) + ") " 
